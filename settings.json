@@ -1,0 +1,18 @@
+{
+    "octoprint": {
+        "apiKey": "<octoprint api key>",
+        "timelapseLocation": "/home/pi/.octoprint/timelapse/tmp"
+    },
+    "rest": {
+        "address": "<server address>",
+        "port": "443",
+        "tlsRejectUnauthorized": false
+    },
+    "slack": {
+        "commandChannelName": "<slack control channel name>",
+        "commandChannelId": "<slack control channel id>",
+        "token": "<slack bot token>",
+        "botName": "ApatoPrint",
+        "iconEmoji": ":apatoprint:"
+    }
+}
