@@ -5,8 +5,7 @@ const request = require('request');
 const fs = require('fs');
 
 const bot = new SlackBot({
-    token: settings.slack.token,
-    name: settings.slack.botName
+    token: settings.slack.token
 });
 
 const params = {
@@ -14,29 +13,39 @@ const params = {
 };
 
 const commands = {
-    "help": { command: help, description: "Print this message" },
-    "print": { command: print, description: "Print a specified file" },
-    "pause": { command: pause, description: "Pause a running print" },
-    "resume": { command: resume, description: "Resume a running print" },
-    "cancel": { command: cancel, description: "Cancel the running print" },
-    "jobstatus": { command: jobStatus, description: "Get the status of the current job" },
-    "jobpicture": { command: uploadStatusPicture, description: "Get a picture of the current job" },
-    "printerstatus": { command: printerStatus, description: "Get the status of the printer" },
-    "getallfiles": { command: getAllFiles, description: "Display all the files on the server" },
-    "connect": { command: connect, description: "Connect to a printer" },
-    "disconnect": { command: disconnect, description: "Disconnect the printer" }
+    help: { command: help, description: "Print this message" },
+    print: { command: print, description: "Print a specified file" },
+    pause: { command: pause, description: "Pause a running print" },
+    resume: { command: resume, description: "Resume a running print" },
+    cancel: { command: cancel, description: "Cancel the running print" },
+    jobstatus: { command: jobStatus, description: "Get the status of the current job" },
+    jobpicture: { command: uploadStatusPicture, description: "Get a picture of the current job" },
+    printerstatus: { command: printerStatus, description: "Get the status of the printer" },
+    getallfiles: { command: getAllFiles, description: "Display all the files on the server" },
+    connect: { command: connect, description: "Connect to a printer" },
+    disconnect: { command: disconnect, description: "Disconnect the printer" }
 }
 
 bot.on("start", function() {
-    bot.postMessageToGroup(settings.slack.commandChannelName, "I am now online!", params);
+    console.log("Connection to Slack established. Posting conformation message to command channel.");
+
+    bot.postMessageToGroup(
+        settings.slack.commandChannelName,
+        settings.slack.connectionMessage != undefined ? settings.slack.connectionMessage : "I am now online!",
+        params
+    ).fail(function(data) {
+        console.log("There was an error posting connection message. error=" + data.error);
+    });
 });
 
 bot.on("message", function(data) {
     if (data.type == "message" && data.channel == settings.slack.commandChannelId) {
-        var commandParts = data.text.split(" ");
+        if (data.text != undefined && data.text != null) {
+            var commandParts = data.text.split(" ");
 
-        if (commands[commandParts[0].toLowerCase()] != undefined) {
-            commands[commandParts[0].toLowerCase()].command(commandParts.slice(1));
+            if (commands[commandParts[0].toLowerCase()] != undefined) {
+                commands[commandParts[0].toLowerCase()].command(commandParts.slice(1));
+            }
         }
     }
 });
@@ -45,14 +54,14 @@ function help() {
     var msg = "Commands:\n";
 
     Object.keys(commands).forEach(function(key,index) {
-        if (commands.hasOwnProperty(property)) {
-            msg += "\t" + key + " - " + index.description + "\n";
+        if (commands.hasOwnProperty(key)) {
+            msg += "\t" + key + " - " + commands[key].description + "\n";
         }
     });
 
     bot.postMessageToGroup(
         settings.slack.commandChannelName,
-        "Print pause was " + (res == true ? "successful" : "unsuccessful"),
+        msg,
         params
     );
 }

@@ -13,6 +13,7 @@
         "commandChannelId": "<slack control channel id>",
         "token": "<slack bot token>",
         "botName": "ApatoPrint",
-        "iconEmoji": ":apatoprint:"
+        "iconEmoji": ":apatoprint:",
+        "connectionMessage": "I am now online!"
     }
 }
