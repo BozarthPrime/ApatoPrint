@@ -22,8 +22,8 @@ If you do not already have Node.js installed on your Raspberry Pi you can find d
 ### Install ApatoPrint
 1. Change directory to be alongside your OctoPrint install (most likely this is your home directory so `cd ~`)
 1. Get a copy of ApatoPrint via a git clone or downloading a zip from here 
-    1. Clone this repo into a folder named "ApatoPrint" `git clone https://github.com/BozarthPrime/ApatoPrint.git ApatoPrint`
-    1. Or download a zip and extract it into a folder named "ApatoPrint"
+	1. Clone this repo into a folder named "ApatoPrint" `git clone https://github.com/BozarthPrime/ApatoPrint.git ApatoPrint`
+	1. Or download a zip and extract it into a folder named "ApatoPrint"
 1. Change directory into the ApatoPrint folder `cd ApatoPrint`
 1. Install dependencies by running `npm install`
 

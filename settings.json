@@ -1,25 +1,25 @@
 {
-    "timelapse": {
-        "image_height": 720,
-        "image_width": 1280,
-        "folder": "timelapses"
-    },
-    "octoprint": {
-        "address": "localhost",
-        "port": "443",
-        "apiKey": "<octoprint api key>",
-        "timelapseLocation": "/home/pi/.octoprint/timelapse/tmp",
-        "useOctoPrintForTimelapses": true
-    },
-    "rest": {
-        "tlsRejectUnauthorized": false
-    },
-    "slack": {
-        "commandChannelName": "<slack control channel name>",
-        "commandChannelId": "<slack control channel id>",
-        "token": "<slack bot token>",
-        "botName": "ApatoPrint",
-        "iconEmoji": ":apatoprint:",
-        "connectionMessage": "I am now online!"
-    }
+	"timelapse": {
+		"image_height": 720,
+		"image_width": 1280,
+		"folder": "timelapses"
+	},
+	"octoprint": {
+		"address": "localhost",
+		"port": "443",
+		"apiKey": "<octoprint api key>",
+		"timelapseLocation": "/home/pi/.octoprint/timelapse/tmp",
+		"useOctoPrintForTimelapses": true
+	},
+	"rest": {
+		"tlsRejectUnauthorized": false
+	},
+	"slack": {
+		"commandChannelName": "<slack control channel name>",
+		"commandChannelId": "<slack control channel id>",
+		"token": "<slack bot token>",
+		"botName": "ApatoPrint",
+		"iconEmoji": ":apatoprint:",
+		"connectionMessage": "I am now online!"
+	}
 }

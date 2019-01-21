@@ -1,17 +1,17 @@
 {
-  "name": "apatoprint",
-  "repository": "https://github.com/BozarthPrime/ApatoPrint",
-  "version": "1.0.1",
-  "description": "A slack bot to remotely control your octoprint server",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Joseph Bozarth",
-  "license": "MIT",
-  "dependencies": {
-    "request": "^2.83.0",
-    "slackbots": "^1.1.0"
-  }
+	"name": "apatoprint",
+	"repository": "https://github.com/BozarthPrime/ApatoPrint",
+	"version": "1.0.1",
+	"description": "A slack bot to remotely control your octoprint server",
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Joseph Bozarth",
+	"license": "MIT",
+	"dependencies": {
+		"request": "^2.83.0",
+		"slackbots": "^1.1.0"
+	}
 }
