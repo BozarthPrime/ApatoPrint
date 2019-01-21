@@ -1,7 +1,7 @@
 {
 	"name": "apatoprint",
 	"repository": "https://github.com/BozarthPrime/ApatoPrint",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"description": "A slack bot to remotely control your octoprint server",
 	"main": "index.js",
 	"scripts": {
