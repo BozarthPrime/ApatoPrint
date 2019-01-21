@@ -1,4 +1,4 @@
-const rest = require('./rest');
+const rest = require('../rest');
 const settings = require('./settings.json');
 
 const headers = {

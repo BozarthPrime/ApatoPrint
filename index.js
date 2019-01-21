@@ -1,6 +1,6 @@
 const SlackBot = require('slackbots');
 const settings = require('./settings.json');
-const octo = require('./octoprint-adapter');
+const controlAdapter = require('./control-adapters/octoprint-adapter');
 const request = require('request');
 const fs = require('fs');
 
@@ -67,7 +67,7 @@ function help() {
 }
 
 function pause() {
-	octo.pause(function(res) {
+	controlAdapter.pause(function(res) {
 		bot.postMessageToGroup(
 			settings.slack.commandChannelName,
 			"Print pause was " + (res == true ? "successful" : "unsuccessful"),
@@ -77,7 +77,7 @@ function pause() {
 }
 
 function resume() {
-	octo.resume(function(res) {
+	controlAdapter.resume(function(res) {
 		bot.postMessageToGroup(
 			settings.slack.commandChannelName,
 			"Print resume was " + (res == true ? "successful" : "unsuccessful"),
@@ -87,7 +87,7 @@ function resume() {
 }
 
 function cancel() {
-	octo.cancel(function(res) {
+	controlAdapter.cancel(function(res) {
 		bot.postMessageToGroup(
 			settings.slack.commandChannelName,
 			"Print cancel was " + (res == true ? "successful" : "unsuccessful"),
@@ -97,7 +97,7 @@ function cancel() {
 }
 
 function connect() {
-	octo.connect(function(res) {
+	controlAdapter.connect(function(res) {
 		bot.postMessageToGroup(
 			settings.slack.commandChannelName,
 			"Printer connection was " + (res == true ? "successful" : "unsuccessful"),
@@ -107,7 +107,7 @@ function connect() {
 }
 
 function disconnect() {
-	octo.disconnect(function(res) {
+	controlAdapter.disconnect(function(res) {
 		bot.postMessageToGroup(
 			settings.slack.commandChannelName,
 			"Printer disconnect was " + (res == true ? "successful" : "unsuccessful"),
@@ -117,7 +117,7 @@ function disconnect() {
 }
 
 function jobStatus() {
-	octo.jobStatus(function(data) {
+	controlAdapter.jobStatus(function(data) {
 		var result = "There was an error getting the status";
 
 		if (data != null) {
@@ -134,7 +134,7 @@ function jobStatus() {
 }
 
 function printerStatus() {
-	octo.printerStatus(function(data) {
+	controlAdapter.printerStatus(function(data) {
 		var result = "There was an error getting the status";
 
 		if (data != null) {
@@ -149,7 +149,7 @@ function printerStatus() {
 }
 
 function getAllFiles() {
-	octo.getAllFiles(function(data) {
+	controlAdapter.getAllFiles(function(data) {
 		var result = "There was an error getting the files";
 
 		if (data != null) {
@@ -172,7 +172,7 @@ function print(args) {
 			params
 		);
 	} else {
-		octo.print(args[0], function(res) {
+		controlAdapter.print(args[0], function(res) {
 			bot.postMessageToGroup(
 				settings.slack.commandChannelName,
 				(res == true ? "Starting print" : "Could not start print"),
