@@ -2,10 +2,10 @@ const https = require('https');
 const settings = require('./settings.json');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = settings.rest.tlsRejectUnauthorized == true ? "1" : "0";
 
-exports.post = function(path, data, headers, callback) {
+exports.post = function(host, port, path, data, headers, callback) {
     const options = {
-        hostname: settings.rest.address,
-        port: settings.rest.port,
+        hostname: host,
+        port: port,
         path: path,
         method: 'POST',
         headers: headers
@@ -37,10 +37,10 @@ exports.post = function(path, data, headers, callback) {
     req.end();
 };
 
-exports.get = function(path, headers, callback) {
+exports.get = function(host, port, path, headers, callback) {
     const options = {
-        hostname: settings.rest.address,
-        port: settings.rest.port,
+        hostname: host,
+        port: port,
         path: path,
         method: 'GET',
         headers: headers

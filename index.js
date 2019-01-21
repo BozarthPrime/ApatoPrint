@@ -13,7 +13,7 @@ const params = {
 };
 
 const commands = {
-    help: { command: help, description: "Print this message" },
+    help: { command: help, description: "Print all commands" },
     print: { command: print, description: "Print a specified file" },
     pause: { command: pause, description: "Pause a running print" },
     resume: { command: resume, description: "Resume a running print" },
