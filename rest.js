@@ -9,6 +9,15 @@ exports.post = function(host, port, path, data, headers, callback) {
 	});
 };
 
+exports.postForm = function(host, path, formData, callback) {
+	request.post({
+		url: host + path,
+		formData: formData,
+	}, function (err, response) {
+		callback(err, response);
+	});
+}
+
 exports.put = function(host, port, path, data, headers, callback) {
 	makeReq('PUT', host, port, path, data, headers, callback, function(req) {
 		req.write(data);
@@ -17,13 +26,13 @@ exports.put = function(host, port, path, data, headers, callback) {
 };
 
 exports.get = function(host, port, path, headers, callback) {
-	makeReq('PUT', host, port, path, data, headers, callback, function(req) {
+	makeReq('PUT', host, port, path, headers, callback, function(req) {
 		req.end();
 	});
 };
 
 exports.delete = function(host, port, path, headers, callback) {
-	makeReq('DELETE', host, port, path, data, headers, callback, function(req) {
+	makeReq('DELETE', host, port, path, headers, callback, function(req) {
 		req.end();
 	});
 };
@@ -40,10 +49,9 @@ function makeReq(method, host, port, path, headers, requestCallback, callback) {
 	const req = https.request(options, function(res) {
 		if (res.statusCode < 200 || res.statusCode > 299) {
 			requestCallback(
-				null, 
 				{ 
-					error: "Received bad status code", 
-					statusCode: res.statusCode 
+					message: "Received bad status code", 
+					error: { statusCode: res.statusCode }
 				}
 			);
 		} else {
@@ -55,14 +63,16 @@ function makeReq(method, host, port, path, headers, requestCallback, callback) {
 			});
 
 			res.on("end", () => {
-				callback(body);
+				requestCallback(null, body);
 			});
 		}
 	});
 
-	req.on('error', function(e) {
-		console.log(e);
-		callback(null, { error: "Error on req"});
+	req.on('error', function(error) {
+		requestCallback({
+			message: "Error on req",
+			error: error
+		});
 	});
 
 	callback(req);

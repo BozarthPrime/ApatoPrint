@@ -1,16 +1,16 @@
+const settings = require('./settings_dev.json');
+const rest = require('./rest');
+
+//const CommandHandler = require('./command-handler');
 const SlackBot = require('slackbots');
-const settings = require('./settings.json');
-const controlAdapter = require('./control-adapters/octoprint-adapter');
-const request = require('request');
-const fs = require('fs');
+const PrinterController = require('./printer-controllers/octoprint-controller');
+const TimelapseController = settings.timelapse.useOctoPrint ? 
+	require('./timelapse-controllers/octoprint-timelapse') : 
+	require('./timelapse-controllers/apatoprint-timelapse');
 
-const bot = new SlackBot({
-	token: settings.slack.token
-});
-
-const params = {
-	icon_emoji: settings.slack.iconEmoji
-};
+const printCtrl = new PrinterController(settings.octoprint, rest)
+const timelapse = new TimelapseController(settings.timelapse);
+const bot = new SlackBot({ token: settings.slack.token });
 
 const commands = {
 	help: { command: help, description: "Print all commands" },
@@ -31,19 +31,21 @@ bot.on("start", function() {
 
 	bot.postMessageToGroup(
 		settings.slack.commandChannelName,
-		settings.slack.connectionMessage != undefined ? settings.slack.connectionMessage : "I am now online!",
-		params
+		settings.slack.connectionMessage != undefined ? 
+			settings.slack.connectionMessage : "I am now online!",
+		{ icon_emoji: settings.slack.iconEmoji }
 	).fail(function(data) {
 		console.log("There was an error posting connection message. error=" + data.error);
 	});
 });
 
-bot.on("message", function(data) {
+bot.on("message", function(data){
 	if (data.type == "message" && data.channel == settings.slack.commandChannelId) {
-		if (data.text != undefined && data.text != null) {
+		if (data.subtype != 'bot_message' && data.text != undefined && data.text != null) {
 			var commandParts = data.text.split(" ");
 
 			if (commands[commandParts[0].toLowerCase()] != undefined) {
+				console.log("Reviced command: " + data.text);
 				commands[commandParts[0].toLowerCase()].command(commandParts.slice(1));
 			}
 		}
@@ -59,100 +61,87 @@ function help() {
 		}
 	});
 
-	bot.postMessageToGroup(
-		settings.slack.commandChannelName,
-		msg,
-		params
-	);
+	postToCommandChannel(msg);
 }
 
 function pause() {
-	controlAdapter.pause(function(res) {
-		bot.postMessageToGroup(
-			settings.slack.commandChannelName,
-			"Print pause was " + (res == true ? "successful" : "unsuccessful"),
-			params
+	printCtrl.pause(function(err, res) {
+		postToCommandChannel(
+			"Print pause was " + (res == true ? "successful" : "unsuccessful")
 		);
 	});
 }
 
 function resume() {
-	controlAdapter.resume(function(res) {
-		bot.postMessageToGroup(
-			settings.slack.commandChannelName,
-			"Print resume was " + (res == true ? "successful" : "unsuccessful"),
-			params
+	printCtrl.resume(function(err, res) {
+		postToCommandChannel(
+			"Print resume was " + (res == true ? "successful" : "unsuccessful")
 		);
 	});
 }
 
 function cancel() {
-	controlAdapter.cancel(function(res) {
-		bot.postMessageToGroup(
-			settings.slack.commandChannelName,
-			"Print cancel was " + (res == true ? "successful" : "unsuccessful"),
-			params
+	printCtrl.cancel(function(err, res) {
+		postToCommandChannel(
+			"Print cancel was " + (res == true ? "successful" : "unsuccessful")
 		);
 	});
 }
 
 function connect() {
-	controlAdapter.connect(function(res) {
-		bot.postMessageToGroup(
-			settings.slack.commandChannelName,
-			"Printer connection was " + (res == true ? "successful" : "unsuccessful"),
-			params
+	printCtrl.connect(function(err, res) {
+		postToCommandChannel(
+			"Printer connection was " + (res == true ? "successful" : "unsuccessful")
 		);
 	});
 }
 
 function disconnect() {
-	controlAdapter.disconnect(function(res) {
-		bot.postMessageToGroup(
-			settings.slack.commandChannelName,
-			"Printer disconnect was " + (res == true ? "successful" : "unsuccessful"),
-			params
+	printCtrl.disconnect(function(err, res) {
+		postToCommandChannel(
+			"Printer disconnect was " + (res == true ? "successful" : "unsuccessful")
 		);
 	});
 }
 
 function jobStatus() {
-	controlAdapter.jobStatus(function(data) {
+	printCtrl.jobStatus(function(err, data) {
 		var result = "There was an error getting the status";
 
-		if (data != null) {
-			var result =
+		if (err == null) {
+			result =
 				"File name: " + data.job.file.name +
 				"\nPrint time: " + data.progress.printTime +
 				"\nPrint time left: " + data.progress.printTimeLeft +
 				"\nPercent complete: " + (data.progress.completion != null ? data.progress.completion.toFixed(2) : 0) + "%";
-		}
 
-		uploadStatusPicture();
-		bot.postMessageToGroup(settings.slack.commandChannelName, result, params);
+			uploadStatusPicture();
+		} 
+
+		postToCommandChannel(result);
 	});
 }
 
 function printerStatus() {
-	controlAdapter.printerStatus(function(data) {
+	printCtrl.printerStatus(function(err, data) {
 		var result = "There was an error getting the status";
 
-		if (data != null) {
-			var result =
+		if (err == null) {
+			result =
 				"State: " + data.state.text +
 				"\nBed temp: " + data.temperature.bed.actual +
 				"\nTool0: " + data.temperature.tool0.actual;
 		}
 
-		bot.postMessageToGroup(settings.slack.commandChannelName, result, params);
+		postToCommandChannel(result);
 	});
 }
 
 function getAllFiles() {
-	controlAdapter.getAllFiles(function(data) {
+	printCtrl.getAllFiles(function(err, data) {
 		var result = "There was an error getting the files";
 
-		if (data != null) {
+		if (err == null) {
 			var result = "Files: \n";
 
 			for (var i = 0; i < data.length; i++) {
@@ -160,66 +149,55 @@ function getAllFiles() {
 			}
 		}
 
-		bot.postMessageToGroup(settings.slack.commandChannelName, result, params);
+		postToCommandChannel(result);
 	});
 }
 
 function print(args) {
 	if (args.length == 0) {
-		bot.postMessageToGroup(
-			settings.slack.commandChannelName,
-			"Invalid use of the print command. You must supply a file path.",
-			params
-		);
+		postToCommandChannel("Invalid use of the print command. You must supply a file path.");
 	} else {
-		controlAdapter.print(args[0], function(res) {
-			bot.postMessageToGroup(
-				settings.slack.commandChannelName,
-				(res == true ? "Starting print" : "Could not start print"),
-				params
+		printCtrl.print(args[0], function(err, res) {
+			postToCommandChannel(
+				(res == true ? "Starting print" : "Could not start print")
 			);
 		});
 	}
 }
 
 function uploadStatusPicture() {
-	fs.readdir(settings.octoprint.timelapseLocation, (err, files) => {
-		if (files.length > 0) {
-			var picture = null;
-
-			for (var i = 0; i < files.length; i++) {
-				var nameParts = files[i].split('-');
-				var fileNumber = parseInt(nameParts[nameParts.length - 1], 10);
-
-				if (picture == null || fileNumber > picture.fileNum) {
-					picture = {
-						fileName: files[i],
-						fileNum: fileNumber
-					};
-				}
-			}
-
-			request.post({
-				url: 'https://slack.com/api/files.upload',
-				formData: {
+	timelapse.getLatestImage(function(err, imageName, imagePath) {
+		if (err == null) {
+			rest.postForm(
+				'https://slack.com', 
+				'/api/files.upload', 
+				{
 					token: settings.slack.token,
-					title: picture.fileName,
-					filename: picture.fileName,
+					title: imageName,
+					filename: imageName,
 					filetype: "auto",
 					channels: settings.slack.commandChannelId,
-					file: fs.createReadStream(settings.octoprint.timelapseLocation + "/" + picture.fileName),
-				},
-			}, function (err, response) {
-				if (err != null) {
-					console.log("Error in uploadStatusPicture: " + JSON.stringify(err));
+					file: fs.createReadStream(imagePath),
+				}, 
+				function (err, response) {
+					if (err != null) {
+						console.log("Error in uploadStatusPicture: " + JSON.stringify(err));
+						postToCommandChannel(
+							"Slack file upload failed: \n>>>" + JSON.stringify(err)
+						);
+					}
 				}
-			});
-		} else {
-			bot.postMessageToGroup(
-				settings.slack.commandChannelName,
-				"There was no timelapse in progress",
-				params
 			);
+		} else {
+			postToCommandChannel("Issue getting status picture: \n>>>" + err.error);
 		}
 	});
+}
+
+function postToCommandChannel(message) {
+	bot.postMessageToGroup(
+		settings.slack.commandChannelName,
+		message,
+		{ icon_emoji: settings.slack.iconEmoji }
+	);
 }
