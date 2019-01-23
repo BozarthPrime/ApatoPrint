@@ -12,6 +12,6 @@
 	"license": "MIT",
 	"dependencies": {
 		"request": "^2.88.0",
-		"slackbots": "^1.1.0"
+		"slackbots": "^1.2.0"
 	}
 }
