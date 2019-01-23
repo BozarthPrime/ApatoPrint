@@ -66,40 +66,60 @@ function help() {
 
 function pause() {
 	printCtrl.pause(function(err, res) {
+		if (err) {
+			console.log("Error in pause: \n" + JSON.stringify(err));
+		}
+
 		postToCommandChannel(
-			"Print pause was " + (res == true ? "successful" : "unsuccessful")
+			"Print pause was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
 	});
 }
 
 function resume() {
 	printCtrl.resume(function(err, res) {
+		if (err) {
+			console.log("Error in resume: \n" + JSON.stringify(err));
+		}
+
 		postToCommandChannel(
-			"Print resume was " + (res == true ? "successful" : "unsuccessful")
+			"Print resume was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
 	});
 }
 
 function cancel() {
 	printCtrl.cancel(function(err, res) {
+		if (err) {
+			console.log("Error in cancel: \n" + JSON.stringify(err));
+		}
+
 		postToCommandChannel(
-			"Print cancel was " + (res == true ? "successful" : "unsuccessful")
+			"Print cancel was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
 	});
 }
 
 function connect() {
 	printCtrl.connect(function(err, res) {
+		if (err) {
+			console.log("Error in connect: \n" + JSON.stringify(err));
+		}
+
 		postToCommandChannel(
-			"Printer connection was " + (res == true ? "successful" : "unsuccessful")
+			"Printer connection was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
 	});
 }
 
 function disconnect() {
 	printCtrl.disconnect(function(err, res) {
+		if (err) {
+			console.log("Error in disconnect: \n" + JSON.stringify(err));
+		}
+
 		postToCommandChannel(
-			"Printer disconnect was " + (res == true ? "successful" : "unsuccessful")
+			"Printer disconnect was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
 	});
 }
@@ -116,7 +136,10 @@ function jobStatus() {
 				"\nPercent complete: " + (data.progress.completion != null ? data.progress.completion.toFixed(2) : 0) + "%";
 
 			uploadStatusPicture();
-		} 
+		} else {
+			result = "There was an error getting the status: \n>>>" + err.message;
+			console.log("Error in jobStatus: \n" + JSON.stringify(error));
+		}
 
 		postToCommandChannel(result);
 	});
@@ -124,13 +147,16 @@ function jobStatus() {
 
 function printerStatus() {
 	printCtrl.printerStatus(function(err, data) {
-		var result = "There was an error getting the status";
+		var result;
 
 		if (err == null) {
 			result =
 				"State: " + data.state.text +
 				"\nBed temp: " + data.temperature.bed.actual +
 				"\nTool0: " + data.temperature.tool0.actual;
+		} else {
+			result = "There was an error getting the status: \n>>>" + err.message;
+			console.log("Error in printerStatus: \n" + JSON.stringify(err));
 		}
 
 		postToCommandChannel(result);
@@ -139,14 +165,17 @@ function printerStatus() {
 
 function getAllFiles() {
 	printCtrl.getAllFiles(function(err, data) {
-		var result = "There was an error getting the files";
+		var result;
 
 		if (err == null) {
-			var result = "Files: \n";
+			result = "Files: \n";
 
 			for (var i = 0; i < data.length; i++) {
 				result += "\t" + data[i].refs.resource.split("files")[1] + "\n";
 			}
+		} else {
+			result = "There was an error getting the files: \n>>>" + err.message;
+			console.log("Error in getAllFiles: \n" + JSON.stringify(err));
 		}
 
 		postToCommandChannel(result);
@@ -158,8 +187,12 @@ function print(args) {
 		postToCommandChannel("Invalid use of the print command. You must supply a file path.");
 	} else {
 		printCtrl.print(args[0], function(err, res) {
+			if (err) {
+				console.log("Error in print: \n" + JSON.stringify(err));
+			}
+
 			postToCommandChannel(
-				(res == true ? "Starting print" : "Could not start print")
+				(res == true ? "Starting print" : "Could not start print \n>>>" + err.message)
 			);
 		});
 	}
@@ -181,9 +214,9 @@ function uploadStatusPicture() {
 				}, 
 				function (err, response) {
 					if (err != null) {
-						console.log("Error in uploadStatusPicture: " + JSON.stringify(err));
+						console.log("Error in uploadStatusPicture: \n" + JSON.stringify(err));
 						postToCommandChannel(
-							"Slack file upload failed: \n>>>" + JSON.stringify(err)
+							"Slack file upload failed: \n>>>" + err.message
 						);
 					}
 				}
