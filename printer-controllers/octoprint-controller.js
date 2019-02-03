@@ -10,8 +10,6 @@ class octoprintController {
 
 	printerStatus(callback) {
 		this.rest.get(
-			this.settings.address, 
-			this.settings.port, 
 			"/api/printer?history=true&limit=2", 
 			this.headers, 
 			function(error, data) {
@@ -29,8 +27,6 @@ class octoprintController {
 
 	jobStatus(callback) {
 		this.rest.get(
-			this.settings.address, 
-			this.settings.port, 
 			"/api/job", 
 			this.headers, 
 			function(error, data) {
@@ -48,8 +44,6 @@ class octoprintController {
 
 	pause(callback) {
 		this.rest.post(
-			this.settings.address, 
-			this.settings.port, 
 			"/api/job", 
 			'{"command": "pause", "action": "pause"}', 
 			this.headers, 
@@ -71,8 +65,6 @@ class octoprintController {
 
 	resume(callback) {
 		this.rest.post(
-			this.settings.address, 
-			this.settings.port, 
 			"/api/job", 
 			'{"command": "pause", "action": "resume"}', 
 			this.headers, 
@@ -94,8 +86,6 @@ class octoprintController {
 
 	cancel(callback) {
 		this.rest.post(
-			this.settings.address, 
-			this.settings.port, 
 			"/api/job", 
 			'{"command": "cancel"}', 
 			this.headers, 
@@ -121,8 +111,6 @@ class octoprintController {
 		}
 
 		this.rest.post(
-			this.settings.address, 
-			this.settings.port, 
 			"/api/files" + location, 
 			'{"command": "select", "print": true}', 
 			this.headers, 
@@ -144,8 +132,6 @@ class octoprintController {
 
 	getAllFiles(callback) {
 		this.rest.get(
-			this.settings.address, 
-			this.settings.port, 
 			"/api/files", 
 			this.headers, 
 			function(error, data) {
@@ -172,8 +158,6 @@ class octoprintController {
 
 	uploadFile(file, callback) {
 		this.rest.post(
-			this.settings.address, 
-			this.settings.port, 
 			"/api/files", 
 			file, 
 			this.headers, 
@@ -195,8 +179,6 @@ class octoprintController {
 
 	connect(callback) {
 		this.rest.post(
-			this.settings.address, 
-			this.settings.port, 
 			"/api/connection", 
 			'{"command": "connect"}', 
 			this.headers, 
@@ -218,8 +200,6 @@ class octoprintController {
 
 	disconnect(callback) {
 		this.rest.post(
-			this.settings.address, 
-			this.settings.port, 
 			"/api/connection", 
 			'{"command": "disconnect"}', 
 			this.headers, 

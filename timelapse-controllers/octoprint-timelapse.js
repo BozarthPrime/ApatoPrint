@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 class octoprintTimelapse {
 	constructor(settings) {
 		this.settings = settings;
@@ -16,8 +18,8 @@ class octoprintTimelapse {
 	}
 	
 	getLatestImage(callback) {
-		fs.readdir(this.settings.timelapseLocation, (err, files) => {
-			if (files.length > 0) {
+		fs.readdir(this.settings.timelapseLocation, function(err, files) {
+			if (files != undefined && files != null && files.length > 0) {
 				var picture = null;
 	
 				for (var i = 0; i < files.length; i++) {

@@ -1,16 +1,18 @@
 const settings = require('./settings_dev.json');
-const rest = require('./rest');
+const fs = require('fs');
 
-//const CommandHandler = require('./command-handler');
+const RestHandler = require('./restHandler');
 const SlackBot = require('slackbots');
 const PrinterController = require('./printer-controllers/octoprint-controller');
 const TimelapseController = settings.timelapse.useOctoPrint ? 
 	require('./timelapse-controllers/octoprint-timelapse') : 
 	require('./timelapse-controllers/apatoprint-timelapse');
 
-const printCtrl = new PrinterController(settings.octoprint, rest)
+
+const printCtrl = new PrinterController(settings.octoprint, new RestHandler(settings.octoprint.address, settings.octoprint.port, false));
 const timelapse = new TimelapseController(settings.timelapse);
 const bot = new SlackBot({ token: settings.slack.token });
+const slackRest = new RestHandler('https://slack.com', "", true);
 
 const commands = {
 	help: { command: help, description: "Print all commands" },
@@ -129,13 +131,17 @@ function jobStatus() {
 		var result = "There was an error getting the status";
 
 		if (err == null) {
-			result =
-				"File name: " + data.job.file.name +
-				"\nPrint time: " + data.progress.printTime +
-				"\nPrint time left: " + data.progress.printTimeLeft +
-				"\nPercent complete: " + (data.progress.completion != null ? data.progress.completion.toFixed(2) : 0) + "%";
+			if (data.job.file.name != null) {
+				result =
+					"File name: " + data.job.file.name +
+					"\nPrint time: " + data.progress.printTime +
+					"\nPrint time left: " + data.progress.printTimeLeft +
+					"\nPercent complete: " + (data.progress.completion != null ? data.progress.completion.toFixed(2) : 0) + "%";
 
-			uploadStatusPicture();
+				uploadStatusPicture();
+			} else {
+				result = "There is currently no job running";
+			}
 		} else {
 			result = "There was an error getting the status: \n>>>" + err.message;
 			console.log("Error in jobStatus: \n" + JSON.stringify(error));
@@ -201,8 +207,7 @@ function print(args) {
 function uploadStatusPicture() {
 	timelapse.getLatestImage(function(err, imageName, imagePath) {
 		if (err == null) {
-			rest.postForm(
-				'https://slack.com', 
+			slackRest.postForm( 
 				'/api/files.upload', 
 				{
 					token: settings.slack.token,
