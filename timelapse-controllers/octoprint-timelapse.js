@@ -17,7 +17,7 @@ class octoprintTimelapse {
 		);
 	}
 	
-	getLatestImage(callback) {
+	getImage(callback) {
 		fs.readdir(this.settings.timelapseLocation, function(err, files) {
 			if (files != undefined && files != null && files.length > 0) {
 				var picture = null;

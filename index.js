@@ -1,4 +1,4 @@
-const settings = require('./settings_dev.json');
+const settings = require('./settings.json');
 const fs = require('fs');
 
 const RestHandler = require('./restHandler');
@@ -205,7 +205,7 @@ function print(args) {
 }
 
 function uploadStatusPicture() {
-	timelapse.getLatestImage(function(err, imageName, imagePath) {
+	timelapse.getImage(function(err, imageName, imagePath) {
 		if (err == null) {
 			slackRest.postForm( 
 				'/api/files.upload', 

@@ -1,13 +1,14 @@
 {
 	"timelapse": {
-		"useOctoPrint": true, 
+		"useOctoPrint": false, 
 		"imageHeight": 720,
 		"imageWidth": 1280,
-		"timelapseLocation": "/home/pi/.octoprint/timelapse/tmp"
+		"timelapseLocation": "timelapses/",
+		"intervalSeconds": 10
 	},
 	"octoprint": {
 		"address": "localhost",
-		"port": "443",
+		"port": "5000",
 		"apiKey": "<octoprint api key>"	
 	},
 	"rest": {
