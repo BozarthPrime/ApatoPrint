@@ -73,6 +73,7 @@ class apatoprintTimelapse {
 			.then((result) => {
 				callback(
 					null,
+					"Current Printer Status",
 					this.tempPhotoPath
 				);
 			})
