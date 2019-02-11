@@ -25,7 +25,9 @@ const commands = {
 	printerstatus: { command: printerStatus, description: "Get the status of the printer" },
 	getallfiles: { command: getAllFiles, description: "Display all the files on the server" },
 	connect: { command: connect, description: "Connect to a printer" },
-	disconnect: { command: disconnect, description: "Disconnect the printer" }
+	disconnect: { command: disconnect, description: "Disconnect the printer" },
+	starttimelapse: { command: startTimelapse, description: "Start a new timelapse" },
+	stoptimelapse: { command: stopTimelapse, description: "Stop a timelapse if one is running" }
 }
 
 bot.on("start", function() {
@@ -228,6 +230,26 @@ function uploadStatusPicture() {
 			);
 		} else {
 			postToCommandChannel("Issue getting status picture: \n>>>" + err.error);
+		}
+	});
+}
+
+function startTimelapse() {
+	timelapse.startTimelapse(function(err, result) {
+		if (err == null) {
+			postToCommandChannel("Timelapse started");
+		} else {
+			postToCommandChannel("Issue starting timelapse: \n>>>" + err.error);
+		}
+	});
+}
+
+function stopTimelapse() {
+	timelapse.stopTimelapse(function(err, result) {
+		if (err == null) {
+			postToCommandChannel("Timelapse stopped");
+		} else {
+			postToCommandChannel("Issue stopping timelapse: \n>>>" + err.error);
 		}
 	});
 }

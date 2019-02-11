@@ -4,7 +4,8 @@
 		"imageHeight": 720,
 		"imageWidth": 1280,
 		"timelapseLocation": "timelapses/",
-		"intervalSeconds": 10
+		"intervalSeconds": 120,
+		"maxImagesPerTimelapse": 500
 	},
 	"octoprint": {
 		"address": "localhost",

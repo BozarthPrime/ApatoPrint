@@ -1,7 +1,9 @@
 const fs = require('fs');
 const PiCamera = require('pi-camera');
+const tempPhotoPath = `${ __dirname }/timelapse_tmp.jpg`;
 const timelapseState = {
 	inTimelapse: false,
+	stopTimelapse: false,
 	timelapseStartTime: null,
 	curTimelapseFolder: null,
 	timelapseImageNum: 0
@@ -10,12 +12,11 @@ const timelapseState = {
 class apatoprintTimelapse {
 	constructor(settings) {
 		this.settings = settings;
-		this.tempPhotoPath = `${ __dirname }/timelapse_tmp.jpg`;
 		this.camera = new PiCamera({
 			mode: 'photo',
-			output: this.tempPhotoPath,
-			width: settings.imageHeight,
-			height: settings.imageWidth,
+			output: tempPhotoPath,
+			width: settings.imageWidth,
+			height: settings.imageHeight,
 			nopreview: true
 		});
 
@@ -31,50 +32,84 @@ class apatoprintTimelapse {
 
 	startTimelapse(callback) {
 		var timestamp = new Date().getTime();
+		timelapseState.inTimelapse = true;
+		timelapseState.stopTimelapse = false;
+		timelapseState.timelapseStartTime = timestamp;
+		timelapseState.curTimelapseFolder = this.settings.timelapseLocation + "timelapse_" + timestamp + "/";
+		timelapseState.timelapseImageNum = 0;
 
-		timelapseState.curTimelapseFolder = settings.timelapseLocation + "timelapse_" + timestamp +"/";
-		
 		fs.mkdirSync(timelapseState.curTimelapseFolder);
+		this.timelapseLoop(this);
 
 		callback(
-			{ message: "Starting a timelapse is unsupported when using Octoprint for timelapses" }
+			null,
+			true
 		);
 	}
 	
 	stopTimelapse(callback) {
+		timelapseState.stopTimelapse = true;
+
 		callback(
-			{ message: "Stopping a timelapse is unsupported when using Octoprint for timelapses" }
+			null,
+			true
 		);
 	}
 
-	timelapseLoop(timeout) {
-		if (timelapseState.inTimelapse) {
-			this.camera.snap()
-				.then((result) => {
-					fs.rename(this.tempPhotoPath, timelapseState.curTimelapseFolder + timelapseState.timelapseImageNum + ".jpg", function (err) {
-						if (err) {
-							console.log("There was an error moveing the timelapse photo: \n" + err.message);
-						} else {
-							console.log("Timelapse photo taken");
-							timelapseState.timelapseImageNum++;
-						}
-					})
-				})
-				.catch((error) => {
-					console.log("There was an error capturing the timelapse photo:\n" + error);
-				});
+	timelapseLoop(context) {
+		if (timelapseState.stopTimelapse) {
+			if (timelapseState.timelapseImageNum < context.settings.maxImagesPerTimelapse) {
+				context.camera.snap()
+					.then((result) => {
+						console.log(result);
+						fs.rename(tempPhotoPath, timelapseState.curTimelapseFolder + timelapseState.timelapseImageNum + ".jpg", function (err) {
+							if (err) {
+								console.log("There was an error moveing the timelapse photo: \n" + err.message);
+							} else {
+								timelapseState.timelapseImageNum++;
+								console.log("Timelapse photo taken: " + timelapseState.timelapseImageNum);
+							}
 
-			setTimeout(timelapseLoop, timeout);
+							setTimeout(context.timelapseLoop.bind(null, context), context.settings.intervalMS);
+						})
+					})
+					.catch((error) => {
+						console.log("There was an error capturing the timelapse photo:\n" + error);
+						setTimeout(context.timelapseLoop.bind(null, context), context.settings.intervalSeconds * 1000);
+					});
+			} else {
+				this.stopTimelapse(function() {
+					console.log("Stopped timelapse because image limit was reached");
+				});
+			}
+		} else {
+			timelapseState.stopTimelapse = false;
+			timelapseState.inTimelapse = false;
 		}
 	}
 	
 	getImage(callback) {
-		this.camera.snap()
+		if (timelapseState.inTimelapse) {
+			fs.readdir(timelapseState.curTimelapseFolder, function(err, files) {
+				if (files != undefined && files != null && files.length > 0) {
+					callback(
+						null,
+						files[files.length - 1],
+						timelapseState.curTimelapseFolder + files[files.length - 1]
+					);
+				} else {
+					callback(
+						{ message: "No timelapse pictures were made yet" }
+					)
+				}
+			});
+		} else {
+			this.camera.snap()
 			.then((result) => {
 				callback(
 					null,
 					"Current Printer Status",
-					this.tempPhotoPath
+					tempPhotoPath
 				);
 			})
 			.catch((error) => {
@@ -82,6 +117,8 @@ class apatoprintTimelapse {
 					{ message: "There was an error capturing the photo: \n>>> " + error }
 				);
 			});
+		}
+		
 	}
 }
 
