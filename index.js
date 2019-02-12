@@ -101,6 +101,10 @@ function cancel() {
 		postToCommandChannel(
 			"Print cancel was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
+		
+		if (res == true && settings.timelapse.autoStartTimelapseWithJobs) {
+			stopTimelapse();
+		}
 	});
 }
 
@@ -202,6 +206,10 @@ function print(args) {
 			postToCommandChannel(
 				(res == true ? "Starting print" : "Could not start print \n>>>" + err.message)
 			);
+
+			if (res == true && settings.timelapse.autoStartTimelapseWithJobs) {
+				startTimelapse();
+			}
 		});
 	}
 }

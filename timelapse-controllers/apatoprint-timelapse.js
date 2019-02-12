@@ -17,6 +17,7 @@ class apatoprintTimelapse {
 			output: tempPhotoPath,
 			width: settings.imageWidth,
 			height: settings.imageHeight,
+			quality: settings.imageQuality,
 			nopreview: true
 		});
 

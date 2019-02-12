@@ -1,11 +1,13 @@
 {
 	"timelapse": {
-		"useOctoPrint": false, 
+		"useOctoPrint": false,
 		"imageHeight": 720,
 		"imageWidth": 1280,
+		"imageQuality": 50,
 		"timelapseLocation": "timelapses/",
 		"intervalSeconds": 120,
-		"maxImagesPerTimelapse": 500
+		"maxImagesPerTimelapse": 500,
+		"autoStartTimelapseWithJobs": true
 	},
 	"octoprint": {
 		"address": "localhost",
