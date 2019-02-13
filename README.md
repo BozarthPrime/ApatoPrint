@@ -132,6 +132,22 @@ Syntax:
 getallfiles
 ```
 
+## starttimelapse
+Manually start a timelapse (only works with ApatoPrint timelapse)
+
+Syntax:
+```
+starttimelapse
+```
+
+## stoptimelapse
+Manually stop a timelapse (only works with ApatoPrint timelapse)
+
+Syntax:
+```
+stoptimelapse
+```
+
 ## connect
 Connect to a printer
 
