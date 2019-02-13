@@ -1,15 +1,18 @@
 {
 	"timelapse": {
-		"image_height": 720,
-		"image_width": 1280,
-		"folder": "timelapses"
+		"useOctoPrint": false,
+		"imageHeight": 720,
+		"imageWidth": 1280,
+		"imageQuality": 50,
+		"timelapseLocation": "timelapses/",
+		"intervalSeconds": 120,
+		"maxImagesPerTimelapse": 500,
+		"autoStartTimelapseWithJobs": true
 	},
 	"octoprint": {
 		"address": "localhost",
-		"port": "443",
-		"apiKey": "<octoprint api key>",
-		"timelapseLocation": "/home/pi/.octoprint/timelapse/tmp",
-		"useOctoPrintForTimelapses": true
+		"port": "5000",
+		"apiKey": "<octoprint api key>"	
 	},
 	"rest": {
 		"tlsRejectUnauthorized": false

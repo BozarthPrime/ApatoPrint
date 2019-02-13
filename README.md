@@ -22,7 +22,7 @@ If you do not already have Node.js installed on your Raspberry Pi you can find d
 ### Install ApatoPrint
 1. Change directory to be alongside your OctoPrint install (most likely this is your home directory so `cd ~`)
 1. Get a copy of ApatoPrint via a git clone or downloading a zip from here 
-	1. Clone the latest release of this repo into a folder named "ApatoPrint" `git clone --branch v1.0.1 https://github.com/BozarthPrime/ApatoPrint.git ApatoPrint`
+	1. Clone the latest release of this repo into a folder named "ApatoPrint" `git clone --branch v1.1.0 https://github.com/BozarthPrime/ApatoPrint.git ApatoPrint`
 	1. Or download the [latest release](https://github.com/BozarthPrime/ApatoPrint/releases) zip and extract it into a folder named "ApatoPrint"
 1. Change directory into the ApatoPrint folder `cd ApatoPrint`
 1. Install dependencies by running `npm install`
@@ -149,9 +149,6 @@ disconnect
 ```
 
 # Other info
-
-## What is still to come in this project?
-In its current state this is an add-on to OctoPrint that does make it controllable via slack. It has a few rough edges I am working on and I would like to add a few more features but it is getting there. What I would like to evolve this project into is a full print server that does not rely on OctoPrint to do the printer control.
 
 ## Special thanks
 [星球](https://openclipart.org/user-detail/%E6%98%9F%E7%90%83) - For posting and open-sourcing your art.
