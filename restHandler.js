@@ -12,7 +12,7 @@ class restHandler {
 	}
 
 	post(path, data, headers, callback) {
-		this.makeReq('POST', this.host, this.port, path, headers, this.useHttps, callback, function(req) {
+		this.makeReq('POST', this.host, this.port, path, headers, callback, function(req) {
 			req.write(data);
 			req.end();
 		});

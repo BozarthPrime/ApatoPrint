@@ -12,13 +12,13 @@ class octoprintController {
 		this.rest.get(
 			"/api/printer?history=true&limit=2", 
 			this.headers, 
-			function(error, data) {
-				if (error == null) {
+			function(err, data) {
+				if (err == null) {
 					callback(null, JSON.parse(data));
 				} else {
 					callback({
 						message: "There was an error calling printerStatus",
-						error: error
+						error: err
 					});
 				}
 			}
@@ -29,13 +29,13 @@ class octoprintController {
 		this.rest.get(
 			"/api/job", 
 			this.headers, 
-			function(error, data) {
-				if (error == null) {
+			function(err, data) {
+				if (err == null) {
 					callback(null, JSON.parse(data));
 				} else {
 					callback({
 						message: "There was an error calling jobStatus",
-						error: error
+						error: err
 					});
 				}
 			}
@@ -47,14 +47,14 @@ class octoprintController {
 			"/api/job", 
 			'{"command": "pause", "action": "pause"}', 
 			this.headers, 
-			function(error, data) {
-				if (error == null) {
+			function(err, data) {
+				if (err == null) {
 					callback(null, true);
 				} else {
 					callback(
 						{
 							message: "There was an error calling pause",
-							error: error
+							error: err
 						},
 						false
 					);
@@ -68,14 +68,14 @@ class octoprintController {
 			"/api/job", 
 			'{"command": "pause", "action": "resume"}', 
 			this.headers, 
-			function(error, data) {
-				if (error == null) {
+			function(err, data) {
+				if (err == null) {
 					callback(null, true);
 				} else {
 					callback(
 						{
 							message: "There was an error calling resume",
-							error: error
+							error: err
 						},
 						false
 					);
@@ -89,14 +89,14 @@ class octoprintController {
 			"/api/job", 
 			'{"command": "cancel"}', 
 			this.headers, 
-			function(error, data) {
-				if (error == null) {
+			function(err, data) {
+				if (err == null) {
 					callback(null, true);
 				} else {
 					callback(
 						{
 							message: "There was an error calling cancel",
-							error: error
+							error: err
 						},
 						false
 					);
@@ -114,14 +114,14 @@ class octoprintController {
 			"/api/files" + location, 
 			'{"command": "select", "print": true}', 
 			this.headers, 
-			function(error, data) {
-				if (error == null) {
+			function(err, data) {
+				if (err == null) {
 					callback(null, true);
 				} else {
 					callback(
 						{
-							message: "There was an error calling cancel",
-							error: error
+							message: "There was an error calling print",
+							error: err
 						},
 						false
 					);
@@ -134,8 +134,8 @@ class octoprintController {
 		this.rest.get(
 			"/api/files", 
 			this.headers, 
-			function(error, data) {
-				if (error == null) {
+			function(err, data) {
+				if (err == null) {
 					var result = JSON.parse(data);
 					var toRet = [];
 
@@ -149,7 +149,7 @@ class octoprintController {
 				} else {
 					callback({
 						message: "There was an error calling getAllFiles",
-						error: error
+						error: err
 					});
 				}
 			}
@@ -161,14 +161,14 @@ class octoprintController {
 			"/api/files", 
 			file, 
 			this.headers, 
-			function(error, data) {
-				if (error == null) {
+			function(err, data) {
+				if (err == null) {
 					callback(null, true);
 				} else {
 					callback(
 						{
-							message: "There was an error calling cancel",
-							error: error
+							message: "There was an error calling uploadFile",
+							error: err
 						},
 						false
 					);
@@ -182,14 +182,14 @@ class octoprintController {
 			"/api/connection", 
 			'{"command": "connect"}', 
 			this.headers, 
-			function(error, data) {
-				if (error == null) {
+			function(err, data) {
+				if (err == null) {
 					callback(null, true);
 				} else {
 					callback(
 						{
 							message: "There was an error calling connect",
-							error: error
+							error: err
 						},
 						false
 					);
@@ -203,14 +203,14 @@ class octoprintController {
 			"/api/connection", 
 			'{"command": "disconnect"}', 
 			this.headers, 
-			function(error, data) {
-				if (error == null) {
+			function(err, data) {
+				if (err == null) {
 					callback(null, true);
 				} else {
 					callback(
 						{
 							message: "There was an error calling disconnect",
-							error: error
+							error: err
 						},
 						false
 					);

@@ -71,7 +71,8 @@ function help() {
 function pause() {
 	printCtrl.pause(function(err, res) {
 		if (err) {
-			console.log("Error in pause: \n" + JSON.stringify(err));
+			console.log("Error in pause:");
+			console.log(err);
 		}
 
 		postToCommandChannel(
@@ -83,7 +84,8 @@ function pause() {
 function resume() {
 	printCtrl.resume(function(err, res) {
 		if (err) {
-			console.log("Error in resume: \n" + JSON.stringify(err));
+			console.log("Error in resume:");
+			console.log(err);
 		}
 
 		postToCommandChannel(
@@ -95,7 +97,8 @@ function resume() {
 function cancel() {
 	printCtrl.cancel(function(err, res) {
 		if (err) {
-			console.log("Error in cancel: \n" + JSON.stringify(err));
+			console.log("Error in cancel:");
+			console.log(err);
 		}
 
 		postToCommandChannel(
@@ -111,7 +114,8 @@ function cancel() {
 function connect() {
 	printCtrl.connect(function(err, res) {
 		if (err) {
-			console.log("Error in connect: \n" + JSON.stringify(err));
+			console.log("Error in connect:");
+			console.log(err);
 		}
 
 		postToCommandChannel(
@@ -123,7 +127,8 @@ function connect() {
 function disconnect() {
 	printCtrl.disconnect(function(err, res) {
 		if (err) {
-			console.log("Error in disconnect: \n" + JSON.stringify(err));
+			console.log("Error in disconnect:");
+			console.log(err);
 		}
 
 		postToCommandChannel(
@@ -150,7 +155,8 @@ function jobStatus() {
 			}
 		} else {
 			result = "There was an error getting the status: \n>>>" + err.message;
-			console.log("Error in jobStatus: \n" + JSON.stringify(error));
+			console.log("Error in jobStatus:");
+			console.log(err);
 		}
 
 		postToCommandChannel(result);
@@ -168,7 +174,8 @@ function printerStatus() {
 				"\nTool0: " + data.temperature.tool0.actual;
 		} else {
 			result = "There was an error getting the status: \n>>>" + err.message;
-			console.log("Error in printerStatus: \n" + JSON.stringify(err));
+			console.log("Error in printerStatus:");
+			console.log.apply(err);
 		}
 
 		postToCommandChannel(result);
@@ -187,7 +194,8 @@ function getAllFiles() {
 			}
 		} else {
 			result = "There was an error getting the files: \n>>>" + err.message;
-			console.log("Error in getAllFiles: \n" + JSON.stringify(err));
+			console.log("Error in getAllFiles:");
+			console.log(err);
 		}
 
 		postToCommandChannel(result);
@@ -200,7 +208,8 @@ function print(args) {
 	} else {
 		printCtrl.print(args[0], function(err, res) {
 			if (err) {
-				console.log("Error in print: \n" + JSON.stringify(err));
+				console.log("Error in print:");
+				console.log(err);
 			}
 
 			postToCommandChannel(
@@ -229,7 +238,8 @@ function uploadStatusPicture() {
 				}, 
 				function (err, response) {
 					if (err != null) {
-						console.log("Error in uploadStatusPicture: \n" + JSON.stringify(err));
+						console.log("Error in uploadStatusPicture:");
+						console.log(err);
 						postToCommandChannel(
 							"Slack file upload failed: \n>>>" + err.message
 						);
@@ -237,7 +247,7 @@ function uploadStatusPicture() {
 				}
 			);
 		} else {
-			postToCommandChannel("Issue getting status picture: \n>>>" + err.error);
+			postToCommandChannel("Issue getting status picture: \n>>>" + err.message);
 		}
 	});
 }
@@ -247,7 +257,7 @@ function startTimelapse() {
 		if (err == null) {
 			postToCommandChannel("Timelapse started");
 		} else {
-			postToCommandChannel("Issue starting timelapse: \n>>>" + err.error);
+			postToCommandChannel("Issue starting timelapse: \n>>>" + err.message);
 		}
 	});
 }
@@ -257,7 +267,7 @@ function stopTimelapse() {
 		if (err == null) {
 			postToCommandChannel("Timelapse stopped");
 		} else {
-			postToCommandChannel("Issue stopping timelapse: \n>>>" + err.error);
+			postToCommandChannel("Issue stopping timelapse: \n>>>" + err.message);
 		}
 	});
 }
