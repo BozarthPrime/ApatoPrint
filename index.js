@@ -1,7 +1,7 @@
 const settings = require('./settings.json');
 const fs = require('fs');
 
-const RestHandler = require('./restHandler');
+const RestHandler = require('./rest-handler');
 const SlackBot = require('slackbots');
 const PrinterController = require('./printer-controllers/octoprint-controller');
 const TimelapseController = settings.timelapse.useOctoPrint ? 
