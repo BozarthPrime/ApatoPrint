@@ -1,21 +1,20 @@
 const settings = require('./settings.json');
 const fs = require("fs");
 const logLevels = {
-	VERBOSE,
-	DEBUG,
-	INFO,
-	WARNING
+	VERBOSE: 0,
+	DEBUG: 1,
+	INFO: 2,
+	WARNING: 3
 }
 const currentLogLevel = determineLogLevel(settings.log.level);
 const logToConsole = settings.log.logToConsole == true;
-const logFileStream = fs.createWriteStream(dir + 'service.log', { flags: 'a' })
 
 function determineLogLevel(setting) {
 	if (setting == null || setting == undefined) {
 		return logLevels.INFO;
 	}
 
-	switch(setting.toLower()) {
+	switch(setting.toLowerCase()) {
 		case "verbose":
 			return logLevels.VERBOSE;
 		case "debug":
@@ -49,19 +48,19 @@ function log(level, msg) {
 	if (level >= currentLogLevel) {
 		var d = new Date();
 		var dateString =
-			d.getUTCFullYear() + "/" +
-			("0" + (d.getUTCMonth()+1)).slice(-2) + "/" +
+			d.getUTCFullYear() + "-" +
+			("0" + (d.getUTCMonth()+1)).slice(-2) + "-" +
 			("0" + d.getUTCDate()).slice(-2) + " " +
 			("0" + d.getUTCHours()).slice(-2) + ":" +
 			("0" + d.getUTCMinutes()).slice(-2) + ":" +
 			("0" + d.getUTCSeconds()).slice(-2);
 		
-		var outputMsg = "[${d}] ${msg}";
+		var outputMsg = "[" + dateString + "] " + msg;
 
 		if (logToConsole) {
 			console.log(outputMsg);
 		}
 
-		logFileStream.write(outputMsg + "\n");
+		fs.appendFileSync('service.log', outputMsg + "\n");
 	}
 } 
