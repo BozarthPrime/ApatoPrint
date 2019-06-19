@@ -14,5 +14,8 @@
 		"pi-camera": "^1.2.1",
 		"request": "^2.88.0",
 		"slackbots": "^1.2.0"
+	},
+	"devDependencies": {
+		"mocha": "^6.1.4"
 	}
 }
