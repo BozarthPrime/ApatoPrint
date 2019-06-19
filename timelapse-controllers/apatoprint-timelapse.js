@@ -1,4 +1,5 @@
 const fs = require('fs');
+const log = require('../logger');
 const PiCamera = require('pi-camera');
 const tempPhotoPath = `${ __dirname }/timelapse_tmp.jpg`;
 const timelapseState = {
@@ -62,25 +63,25 @@ class apatoprintTimelapse {
 			if (timelapseState.timelapseImageNum < context.settings.maxImagesPerTimelapse) {
 				context.camera.snap()
 					.then((result) => {
-						console.log(result);
+						log.verbose(result);
 						fs.rename(tempPhotoPath, timelapseState.curTimelapseFolder + timelapseState.timelapseImageNum + ".jpg", function (err) {
 							if (err) {
-								console.log("There was an error moveing the timelapse photo: \n" + err.message);
+								log.error("There was an error moveing the timelapse photo: \n" + err.message);
 							} else {
 								timelapseState.timelapseImageNum++;
-								console.log("Timelapse photo taken: " + timelapseState.timelapseImageNum);
+								log.debug("Timelapse photo taken: " + timelapseState.timelapseImageNum);
 							}
 
 							setTimeout(context.timelapseLoop.bind(null, context), context.settings.intervalMS);
 						})
 					})
 					.catch((error) => {
-						console.log("There was an error capturing the timelapse photo:\n" + error);
+						log.error("There was an error capturing the timelapse photo:\n" + error);
 						setTimeout(context.timelapseLoop.bind(null, context), context.settings.intervalSeconds * 1000);
 					});
 			} else {
 				this.stopTimelapse(function() {
-					console.log("Stopped timelapse because image limit was reached");
+					log.warn("Stopped timelapse because image limit was reached");
 				});
 			}
 		} else {

@@ -9,7 +9,7 @@
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "Joseph Bozarth",
-	"license": "MIT",
+	"license": "GPL-3.0",
 	"dependencies": {
 		"pi-camera": "^1.2.1",
 		"request": "^2.88.0",

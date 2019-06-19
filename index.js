@@ -1,7 +1,8 @@
 const settings = require('./settings.json');
 const fs = require('fs');
+const log = require("./logger");
 
-const RestHandler = require('./restHandler');
+const RestHandler = require('./rest-handler');
 const SlackBot = require('slackbots');
 const PrinterController = require('./printer-controllers/octoprint-controller');
 const TimelapseController = settings.timelapse.useOctoPrint ? 
@@ -31,7 +32,7 @@ const commands = {
 }
 
 bot.on("start", function() {
-	console.log("Connection to Slack established. Posting conformation message to command channel.");
+	log.info("Connection to Slack established. Posting conformation message to command channel.");
 
 	bot.postMessageToGroup(
 		settings.slack.commandChannelName,
@@ -39,7 +40,7 @@ bot.on("start", function() {
 			settings.slack.connectionMessage : "I am now online!",
 		{ icon_emoji: settings.slack.iconEmoji }
 	).fail(function(data) {
-		console.log("There was an error posting connection message. error=" + data.error);
+		log.error("There was an error posting connection message. error=" + data.error);
 	});
 });
 
@@ -49,7 +50,7 @@ bot.on("message", function(data){
 			var commandParts = data.text.split(" ");
 
 			if (commands[commandParts[0].toLowerCase()] != undefined) {
-				console.log("Reviced command: " + data.text);
+				log.debug("Reviced command: " + data.text);
 				commands[commandParts[0].toLowerCase()].command(commandParts.slice(1));
 			}
 		}
@@ -71,8 +72,7 @@ function help() {
 function pause() {
 	printCtrl.pause(function(err, res) {
 		if (err) {
-			console.log("Error in pause:");
-			console.log(err);
+			log.error("Error in pause:" + JSON.stringify(err));
 		}
 
 		postToCommandChannel(
@@ -84,8 +84,7 @@ function pause() {
 function resume() {
 	printCtrl.resume(function(err, res) {
 		if (err) {
-			console.log("Error in resume:");
-			console.log(err);
+			log.error("Error in resume:" + JSON.stringify(err));
 		}
 
 		postToCommandChannel(
@@ -97,8 +96,7 @@ function resume() {
 function cancel() {
 	printCtrl.cancel(function(err, res) {
 		if (err) {
-			console.log("Error in cancel:");
-			console.log(err);
+			log.error("Error in cancel:" + JSON.stringify(err));
 		}
 
 		postToCommandChannel(
@@ -114,8 +112,7 @@ function cancel() {
 function connect() {
 	printCtrl.connect(function(err, res) {
 		if (err) {
-			console.log("Error in connect:");
-			console.log(err);
+			log.error("Error in connect:" + JSON.stringify(err));
 		}
 
 		postToCommandChannel(
@@ -127,8 +124,7 @@ function connect() {
 function disconnect() {
 	printCtrl.disconnect(function(err, res) {
 		if (err) {
-			console.log("Error in disconnect:");
-			console.log(err);
+			log.error("Error in disconnect:" + JSON.stringify(err));
 		}
 
 		postToCommandChannel(
@@ -155,8 +151,7 @@ function jobStatus() {
 			}
 		} else {
 			result = "There was an error getting the status: \n>>>" + err.message;
-			console.log("Error in jobStatus:");
-			console.log(err);
+			log.error("Error in jobStatus:" + JSON.stringify(err));
 		}
 
 		postToCommandChannel(result);
@@ -174,8 +169,7 @@ function printerStatus() {
 				"\nTool0: " + data.temperature.tool0.actual;
 		} else {
 			result = "There was an error getting the status: \n>>>" + err.message;
-			console.log("Error in printerStatus:");
-			console.log.apply(err);
+			log.error("Error in printerStatus:" + JSON.stringify(err));
 		}
 
 		postToCommandChannel(result);
@@ -194,8 +188,7 @@ function getAllFiles() {
 			}
 		} else {
 			result = "There was an error getting the files: \n>>>" + err.message;
-			console.log("Error in getAllFiles:");
-			console.log(err);
+			log.error("Error in getAllFiles:" + JSON.stringify(err));
 		}
 
 		postToCommandChannel(result);
@@ -208,8 +201,7 @@ function print(args) {
 	} else {
 		printCtrl.print(args[0], function(err, res) {
 			if (err) {
-				console.log("Error in print:");
-				console.log(err);
+				log.error("Error in print:" + JSON.stringify(err));
 			}
 
 			postToCommandChannel(
@@ -238,8 +230,8 @@ function uploadStatusPicture() {
 				}, 
 				function (err, response) {
 					if (err != null) {
-						console.log("Error in uploadStatusPicture:");
-						console.log(err);
+						log.error("Error in uploadStatusPicture:" + JSON.stringify(err));
+						
 						postToCommandChannel(
 							"Slack file upload failed: \n>>>" + err.message
 						);
