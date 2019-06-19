@@ -4,7 +4,8 @@ const logLevels = {
 	VERBOSE: 0,
 	DEBUG: 1,
 	INFO: 2,
-	WARNING: 3
+	ERROR: 3,
+	WARNING: 4
 }
 const currentLogLevel = determineLogLevel(settings.log.level);
 const logToConsole = settings.log.logToConsole == true;
@@ -21,6 +22,8 @@ function determineLogLevel(setting) {
 			return logLevels.DEBUG;
 		case "info":
 			return logLevels.INFO;
+		case "error":
+			return logLevels.ERROR;
 		case "warning":
 			return logLevels.WARNING;
 		default:
@@ -38,6 +41,10 @@ module.exports.debug = function(msg) {
 
 module.exports.info = function(msg) {
 	log(logLevels.INFO, msg);
+}
+
+module.exports.error = function(msg) {
+	log(logLevels.ERROR, msg);
 }
 
 module.exports.warn = function(msg) {
