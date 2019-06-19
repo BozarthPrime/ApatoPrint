@@ -32,26 +32,26 @@ function determineLogLevel(setting) {
 }
 
 module.exports.verbose = function(msg) {
-	log(logLevels.VERBOSE, msg);
+	log(logLevels.VERBOSE, "VER", msg);
 }
 
 module.exports.debug = function(msg) {
-	log(logLevels.DEBUG, msg);
+	log(logLevels.DEBUG, "DBG", msg);
 }
 
 module.exports.info = function(msg) {
-	log(logLevels.INFO, msg);
+	log(logLevels.INFO, "INF", msg);
 }
 
 module.exports.error = function(msg) {
-	log(logLevels.ERROR, msg);
+	log(logLevels.ERROR, "ERR", msg);
 }
 
 module.exports.warn = function(msg) {
-	log(logLevels.WARNING, msg);
+	log(logLevels.WARNING, "WRN", msg);
 }
 
-function log(level, msg) {
+function log(level, levelName, msg) {
 	if (level >= currentLogLevel) {
 		var d = new Date();
 		var dateString =
@@ -62,7 +62,7 @@ function log(level, msg) {
 			("0" + d.getUTCMinutes()).slice(-2) + ":" +
 			("0" + d.getUTCSeconds()).slice(-2);
 		
-		var outputMsg = "[" + dateString + "] " + msg;
+		var outputMsg = "[" + dateString + " " + levelName + "] " + msg;
 
 		if (logToConsole) {
 			console.log(outputMsg);
