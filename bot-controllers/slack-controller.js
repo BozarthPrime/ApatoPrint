@@ -1,6 +1,7 @@
 const SlackBot = require('slackbots');
 const RestHandler = require('../rest-handler');
 const slackRest = new RestHandler('https://slack.com', "", true);
+const fs = require('fs');
 const log = require("../logger");
 const state = {};
 

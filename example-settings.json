@@ -9,6 +9,10 @@
 		"maxImagesPerTimelapse": 500,
 		"autoStartTimelapseWithJobs": true
 	},
+	"autoConnect": {
+		"enabled": false,
+		"intervalCheckSeconds": 30
+	},
 	"octoprint": {
 		"address": "localhost",
 		"port": "5000",

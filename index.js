@@ -1,5 +1,4 @@
 const settings = require('./settings.json');
-const fs = require('fs');
 const log = require("./logger");
 
 const RestHandler = require('./rest-handler');
@@ -8,7 +7,6 @@ const PrinterController = require('./printer-controllers/octoprint-controller');
 const TimelapseController = settings.timelapse.useOctoPrint ? 
 	require('./timelapse-controllers/octoprint-timelapse') : 
 	require('./timelapse-controllers/apatoprint-timelapse');
-
 
 const printCtrl = new PrinterController(settings.octoprint, new RestHandler(settings.octoprint.address, settings.octoprint.port, false));
 const timelapse = new TimelapseController(settings.timelapse);
@@ -37,6 +35,31 @@ Object.keys(commands).forEach(function(key,index) {
 		shortCommands[commands[key].shortCommand] = commands[key];
 	}
 });
+
+/******************************************************************************
+ * Startup
+ *****************************************************************************/
+
+/***************
+ * Auto connect
+ **************/
+if (settings.autoConnect != undefined && settings.autoConnect.enabled == true) {
+	setInterval(function() {
+		log.trace("Checking connection for auto connect.");
+		printCtrl.printerStatus(function(err, data) {
+			var result;
+	
+			if (err != null) {
+				log.trace("Printer was not connected. Attempting connection.");
+				connect();
+			}
+		});
+	}, settings.autoConnect.intervalCheckSeconds * 1000);
+}
+
+/******************************************************************************
+ * Command functions
+ *****************************************************************************/
 
 function handleMessage(message) {
 	log.debug("handleMessage: " + message);
