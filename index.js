@@ -3,7 +3,7 @@ const fs = require('fs');
 const log = require("./logger");
 
 const RestHandler = require('./rest-handler');
-const SlackBot = require('slackbots');
+const BotController = require('./bot-controllers/slack-controller');
 const PrinterController = require('./printer-controllers/octoprint-controller');
 const TimelapseController = settings.timelapse.useOctoPrint ? 
 	require('./timelapse-controllers/octoprint-timelapse') : 
@@ -12,8 +12,7 @@ const TimelapseController = settings.timelapse.useOctoPrint ?
 
 const printCtrl = new PrinterController(settings.octoprint, new RestHandler(settings.octoprint.address, settings.octoprint.port, false));
 const timelapse = new TimelapseController(settings.timelapse);
-const bot = new SlackBot({ token: settings.slack.token });
-const slackRest = new RestHandler('https://slack.com', "", true);
+const bot = new BotController(settings.slack, handleMessage);
 
 const commands = {
 	help: { command: help, description: "Print all commands" },
@@ -31,31 +30,17 @@ const commands = {
 	stoptimelapse: { command: stopTimelapse, description: "Stop a timelapse if one is running" }
 }
 
-bot.on("start", function() {
-	log.info("Connection to Slack established. Posting conformation message to command channel.");
+function handleMessage(message) {
+	log.debug("handleMessage: " + message);
+	
+	if (message != undefined && message != null) {
+		var commandParts = message.split(" ");
 
-	bot.postMessageToGroup(
-		settings.slack.commandChannelName,
-		settings.slack.connectionMessage != undefined ? 
-			settings.slack.connectionMessage : "I am now online!",
-		{ icon_emoji: settings.slack.iconEmoji }
-	).fail(function(data) {
-		log.error("There was an error posting connection message. error=" + data.error);
-	});
-});
-
-bot.on("message", function(data){
-	if (data.type == "message" && data.channel == settings.slack.commandChannelId) {
-		if (data.subtype != 'bot_message' && data.text != undefined && data.text != null) {
-			var commandParts = data.text.split(" ");
-
-			if (commands[commandParts[0].toLowerCase()] != undefined) {
-				log.debug("Reviced command: " + data.text);
-				commands[commandParts[0].toLowerCase()].command(commandParts.slice(1));
-			}
+		if (commands[commandParts[0].toLowerCase()] != undefined) {
+			commands[commandParts[0].toLowerCase()].command(commandParts.slice(1));
 		}
 	}
-});
+}
 
 function help() {
 	var msg = "Commands:\n";
@@ -66,7 +51,7 @@ function help() {
 		}
 	});
 
-	postToCommandChannel(msg);
+	bot.postToCommandChannel(msg);
 }
 
 function pause() {
@@ -75,7 +60,7 @@ function pause() {
 			log.error("Error in pause:" + JSON.stringify(err));
 		}
 
-		postToCommandChannel(
+		bot.postToCommandChannel(
 			"Print pause was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
 	});
@@ -87,7 +72,7 @@ function resume() {
 			log.error("Error in resume:" + JSON.stringify(err));
 		}
 
-		postToCommandChannel(
+		bot.postToCommandChannel(
 			"Print resume was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
 	});
@@ -99,7 +84,7 @@ function cancel() {
 			log.error("Error in cancel:" + JSON.stringify(err));
 		}
 
-		postToCommandChannel(
+		bot.postToCommandChannel(
 			"Print cancel was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
 		
@@ -115,7 +100,7 @@ function connect() {
 			log.error("Error in connect:" + JSON.stringify(err));
 		}
 
-		postToCommandChannel(
+		bot.postToCommandChannel(
 			"Printer connection was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
 	});
@@ -127,7 +112,7 @@ function disconnect() {
 			log.error("Error in disconnect:" + JSON.stringify(err));
 		}
 
-		postToCommandChannel(
+		bot.postToCommandChannel(
 			"Printer disconnect was " + (res == true ? "successful" : "unsuccessful: \n>>>" + err.message)
 		);
 	});
@@ -154,7 +139,7 @@ function jobStatus() {
 			log.error("Error in jobStatus:" + JSON.stringify(err));
 		}
 
-		postToCommandChannel(result);
+		bot.postToCommandChannel(result);
 	});
 }
 
@@ -172,7 +157,7 @@ function printerStatus() {
 			log.error("Error in printerStatus:" + JSON.stringify(err));
 		}
 
-		postToCommandChannel(result);
+		bot.postToCommandChannel(result);
 	});
 }
 
@@ -191,20 +176,20 @@ function getAllFiles() {
 			log.error("Error in getAllFiles:" + JSON.stringify(err));
 		}
 
-		postToCommandChannel(result);
+		bot.postToCommandChannel(result);
 	});
 }
 
 function print(args) {
 	if (args.length == 0) {
-		postToCommandChannel("Invalid use of the print command. You must supply a file path.");
+		bot.postToCommandChannel("Invalid use of the print command. You must supply a file path.");
 	} else {
 		printCtrl.print(args[0], function(err, res) {
 			if (err) {
 				log.error("Error in print:" + JSON.stringify(err));
 			}
 
-			postToCommandChannel(
+			bot.postToCommandChannel(
 				(res == true ? "Starting print" : "Could not start print \n>>>" + err.message)
 			);
 
@@ -218,28 +203,9 @@ function print(args) {
 function uploadStatusPicture() {
 	timelapse.getImage(function(err, imageName, imagePath) {
 		if (err == null) {
-			slackRest.postForm( 
-				'/api/files.upload', 
-				{
-					token: settings.slack.token,
-					title: imageName,
-					filename: imageName,
-					filetype: "auto",
-					channels: settings.slack.commandChannelId,
-					file: fs.createReadStream(imagePath),
-				}, 
-				function (err, response) {
-					if (err != null) {
-						log.error("Error in uploadStatusPicture:" + JSON.stringify(err));
-						
-						postToCommandChannel(
-							"Slack file upload failed: \n>>>" + err.message
-						);
-					}
-				}
-			);
+			bot.uploadFile(imageName, imagePath);
 		} else {
-			postToCommandChannel("Issue getting status picture: \n>>>" + err.message);
+			bot.postToCommandChannel("Issue getting status picture: \n>>>" + err.message);
 		}
 	});
 }
@@ -247,9 +213,9 @@ function uploadStatusPicture() {
 function startTimelapse() {
 	timelapse.startTimelapse(function(err, result) {
 		if (err == null) {
-			postToCommandChannel("Timelapse started");
+			bot.postToCommandChannel("Timelapse started");
 		} else {
-			postToCommandChannel("Issue starting timelapse: \n>>>" + err.message);
+			bot.postToCommandChannel("Issue starting timelapse: \n>>>" + err.message);
 		}
 	});
 }
@@ -257,17 +223,9 @@ function startTimelapse() {
 function stopTimelapse() {
 	timelapse.stopTimelapse(function(err, result) {
 		if (err == null) {
-			postToCommandChannel("Timelapse stopped");
+			bot.postToCommandChannel("Timelapse stopped");
 		} else {
-			postToCommandChannel("Issue stopping timelapse: \n>>>" + err.message);
+			bot.postToCommandChannel("Issue stopping timelapse: \n>>>" + err.message);
 		}
 	});
-}
-
-function postToCommandChannel(message) {
-	bot.postMessageToGroup(
-		settings.slack.commandChannelName,
-		message,
-		{ icon_emoji: settings.slack.iconEmoji }
-	);
 }
