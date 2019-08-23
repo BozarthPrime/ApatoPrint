@@ -36,25 +36,59 @@ Object.keys(commands).forEach(function(key,index) {
 	}
 });
 
+/***************
+ * Global shared info
+ * WARNING: Should be considered volitile
+ **************/
+const globalInfo = {
+	printRunning: false,
+	lastPrintEnded: -1,
+	lastStatusUpdate: -1
+};
+
 /******************************************************************************
  * Startup
  *****************************************************************************/
 
 /***************
- * Auto connect
+ * Auto connect & status update
  **************/
-if (settings.autoConnect != undefined && settings.autoConnect.enabled == true) {
+if ((settings.autoConnect != undefined && settings.autoConnect.enabled == true) ||
+	(settings.statusUpdates != undefined && settings.statusUpdates.enabled == true)) {
 	setInterval(function() {
-		log.trace("Checking connection for auto connect.");
+		log.verbose("Checking connection for auto connect.");
 		printCtrl.printerStatus(function(err, data) {
 			var result;
 	
-			if (err != null) {
-				log.trace("Printer was not connected. Attempting connection.");
+			if (err != null && (settings.autoConnect != undefined && settings.autoConnect.enabled == true)) {
+				log.verbose("Printer was not connected. Attempting connection.");
 				connect();
+			} else {
+				// Update global flags
+				if (globalFlags.printRunning && data.state.flags.printing == false) {
+					lastPrintEnded = new Date().getTime();
+				}
+
+				globalFlags.printRunning = data.state.flags.printing;
 			}
 		});
-	}, settings.autoConnect.intervalCheckSeconds * 1000);
+	}, settings.autoConnect.intervalCheckSeconds != undefined ?  
+			settings.autoConnect.intervalCheckSeconds * 1000 : 60000);
+}
+
+/***************
+ * Status updates
+ **************/
+if (settings.statusUpdates != undefined && settings.statusUpdates.enabled == true) {
+	setInterval(function() {
+		if (globalInfo.printRunning || 
+			((globalInfo.lastStatusUpdate - settings.statusUpdates.intervalMinutes * 1000 * 60) < globalInfo.lastPrintEnded)) {
+			log.verbose("Sending periodic status update");
+			jobStatus();
+		}
+
+		globalInfo.lastStatusUpdate = new Date().getTime();
+	}, settings.statusUpdates.intervalMinutes * 1000 * 60);
 }
 
 /******************************************************************************
