@@ -67,6 +67,10 @@ Syntax:
 ```
 help
 ```
+or 
+```
+?
+```
 
 ## print
 Print a specified file
@@ -74,6 +78,10 @@ Print a specified file
 Syntax:
 ```
 print <file name>
+```
+or 
+```
+pri <file name>
 ```
 
 ## pause
@@ -83,6 +91,10 @@ Syntax:
 ```
 pause
 ```
+or 
+```
+pau
+```
 
 ## resume
 Resume a running print
@@ -90,6 +102,10 @@ Resume a running print
 Syntax:
 ```
 resume
+```
+or 
+```
+res
 ```
 
 ## cancel
@@ -99,6 +115,10 @@ Syntax:
 ```
 cancel
 ```
+or 
+```
+can
+```
 
 ## jobstatus
 Get the status of the current job
@@ -106,6 +126,10 @@ Get the status of the current job
 Syntax:
 ```
 jobstatus
+```
+or 
+```
+js
 ```
 
 ## jobpicture
@@ -115,6 +139,10 @@ Syntax:
 ```
 jobpicture
 ```
+or 
+```
+jp
+```
 
 ## printerstatus
 Get the status of the printer
@@ -122,6 +150,10 @@ Get the status of the printer
 Syntax:
 ```
 printerstatus
+```
+or 
+```
+ps
 ```
 
 ## getallfiles
@@ -131,6 +163,10 @@ Syntax:
 ```
 getallfiles
 ```
+or 
+```
+gaf
+```
 
 ## starttimelapse
 Manually start a timelapse (only works with ApatoPrint timelapse)
@@ -138,6 +174,10 @@ Manually start a timelapse (only works with ApatoPrint timelapse)
 Syntax:
 ```
 starttimelapse
+```
+or 
+```
+tl
 ```
 
 ## stoptimelapse
@@ -147,6 +187,10 @@ Syntax:
 ```
 stoptimelapse
 ```
+or 
+```
+stptl
+```
 
 ## connect
 Connect to a printer
@@ -155,6 +199,10 @@ Syntax:
 ```
 connect
 ```
+or 
+```
+conn
+```
 
 ## disconnect
 Disconnect the printer
@@ -162,6 +210,10 @@ Disconnect the printer
 Syntax:
 ```
 disconnect
+```
+or 
+```
+dconn
 ```
 
 # Other info
