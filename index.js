@@ -45,14 +45,14 @@ Object.keys(commands).forEach(function(key,index) {
  **************/
 if (settings.autoConnect != undefined && settings.autoConnect.enabled == true) {
 	setInterval(function() {
+		log.trace("Checking connection for auto connect.");
 		printCtrl.printerStatus(function(err, data) {
 			var result;
 	
 			if (err != null) {
+				log.trace("Printer was not connected. Attempting connection.");
 				connect();
 			}
-	
-			bot.postToCommandChannel(result);
 		});
 	}, settings.autoConnect.intervalCheckSeconds * 1000);
 }
