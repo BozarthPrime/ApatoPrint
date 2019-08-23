@@ -10,8 +10,12 @@
 		"autoStartTimelapseWithJobs": true
 	},
 	"autoConnect": {
-		"enabled": false,
+		"enabled": true,
 		"intervalCheckSeconds": 30
+	},
+	"statusUpdates": {
+		"enabled": true,
+		"intervalMinutes": 60
 	},
 	"octoprint": {
 		"address": "localhost",
