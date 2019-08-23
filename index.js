@@ -15,20 +15,28 @@ const timelapse = new TimelapseController(settings.timelapse);
 const bot = new BotController(settings.slack, handleMessage);
 
 const commands = {
-	help: { command: help, description: "Print all commands" },
-	print: { command: print, description: "Print a specified file" },
-	pause: { command: pause, description: "Pause a running print" },
-	resume: { command: resume, description: "Resume a running print" },
-	cancel: { command: cancel, description: "Cancel the running print" },
-	jobstatus: { command: jobStatus, description: "Get the status of the current job" },
-	jobpicture: { command: uploadStatusPicture, description: "Get a picture of the current job" },
-	printerstatus: { command: printerStatus, description: "Get the status of the printer" },
-	getallfiles: { command: getAllFiles, description: "Display all the files on the server" },
-	connect: { command: connect, description: "Connect to a printer" },
-	disconnect: { command: disconnect, description: "Disconnect the printer" },
-	starttimelapse: { command: startTimelapse, description: "Start a new timelapse" },
-	stoptimelapse: { command: stopTimelapse, description: "Stop a timelapse if one is running" }
+	help: { command: help, shortCommand: "?", description: "Print all commands" },
+	print: { command: print, shortCommand: "pri", description: "Print a specified file" },
+	pause: { command: pause, shortCommand: "pau", description: "Pause a running print" },
+	resume: { command: resume, shortCommand: "r", description: "Resume a running print" },
+	cancel: { command: cancel, shortCommand: "c", description: "Cancel the running print" },
+	jobstatus: { command: jobStatus, shortCommand: "js", description: "Get the status of the current job" },
+	jobpicture: { command: uploadStatusPicture, shortCommand: "jp", description: "Get a picture of the current job" },
+	printerstatus: { command: printerStatus, shortCommand: "ps", description: "Get the status of the printer" },
+	getallfiles: { command: getAllFiles, shortCommand: "gaf", description: "Display all the files on the server" },
+	connect: { command: connect, shortCommand: "conn", description: "Connect to a printer" },
+	disconnect: { command: disconnect, shortCommand: "dconn", description: "Disconnect the printer" },
+	starttimelapse: { command: startTimelapse, shortCommand: "tl", description: "Start a new timelapse" },
+	stoptimelapse: { command: stopTimelapse, shortCommand: "stptl", description: "Stop a timelapse if one is running" }
 }
+
+// Setup shortend commands lookup from the commands const
+const shortCommands = {}
+Object.keys(commands).forEach(function(key,index) {
+	if (commands.hasOwnProperty(key)) {
+		shortCommands[commands[key].shortCommand] = commands[key];
+	}
+});
 
 function handleMessage(message) {
 	log.debug("handleMessage: " + message);
@@ -38,6 +46,8 @@ function handleMessage(message) {
 
 		if (commands[commandParts[0].toLowerCase()] != undefined) {
 			commands[commandParts[0].toLowerCase()].command(commandParts.slice(1));
+		} else if (shortCommands[commandParts[0].toLowerCase()] != undefined) {
+			shortCommands[commandParts[0].toLowerCase()].command(commandParts.slice(1));
 		}
 	}
 }
@@ -47,7 +57,8 @@ function help() {
 
 	Object.keys(commands).forEach(function(key,index) {
 		if (commands.hasOwnProperty(key)) {
-			msg += "\t" + key + " - " + commands[key].description + "\n";
+			msg += "\t" + key + " (" + commands[key].shortCommand + ") - " + 
+					commands[key].description + "\n";
 		}
 	});
 
