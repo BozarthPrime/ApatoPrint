@@ -9,7 +9,6 @@ class slackController {
 		state.bot = new SlackBot({ token: settings.token });
 		state.settings = settings;
 		state.messageHandler = messageHandler;
-		console.log(state);
 
         state.bot.on("start", function() {
 			log.info("Connection to Slack established. Posting conformation message to command channel.");
