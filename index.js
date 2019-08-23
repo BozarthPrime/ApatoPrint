@@ -36,6 +36,31 @@ Object.keys(commands).forEach(function(key,index) {
 	}
 });
 
+/******************************************************************************
+ * Startup
+ *****************************************************************************/
+
+/***************
+ * Auto connect
+ **************/
+if (settings.autoConnect != undefined && settings.autoConnect.enabled == true) {
+	setInterval(function() {
+		printCtrl.printerStatus(function(err, data) {
+			var result;
+	
+			if (err != null) {
+				connect();
+			}
+	
+			bot.postToCommandChannel(result);
+		});
+	}, settings.autoConnect.intervalCheckSeconds * 1000);
+}
+
+/******************************************************************************
+ * Command functions
+ *****************************************************************************/
+
 function handleMessage(message) {
 	log.debug("handleMessage: " + message);
 	
