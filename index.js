@@ -1,5 +1,4 @@
 const settings = require('./settings.json');
-const fs = require('fs');
 const log = require("./logger");
 
 const RestHandler = require('./rest-handler');
@@ -8,7 +7,6 @@ const PrinterController = require('./printer-controllers/octoprint-controller');
 const TimelapseController = settings.timelapse.useOctoPrint ? 
 	require('./timelapse-controllers/octoprint-timelapse') : 
 	require('./timelapse-controllers/apatoprint-timelapse');
-
 
 const printCtrl = new PrinterController(settings.octoprint, new RestHandler(settings.octoprint.address, settings.octoprint.port, false));
 const timelapse = new TimelapseController(settings.timelapse);
