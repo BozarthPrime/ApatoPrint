@@ -64,12 +64,12 @@ if ((settings.autoConnect != undefined && settings.autoConnect.enabled == true) 
 				log.verbose("Printer was not connected. Attempting connection.");
 				connect();
 			} else {
-				// Update global flags
-				if (globalFlags.printRunning && data.state.flags.printing == false) {
-					lastPrintEnded = new Date().getTime();
+				// Update global info
+				if (globalInfo .printRunning && data.state.flags.printing == false) {
+					globalInfo.lastPrintEnded = new Date().getTime();
 				}
 
-				globalFlags.printRunning = data.state.flags.printing;
+				globalInfo.printRunning = data.state.flags.printing;
 			}
 		});
 	}, settings.autoConnect.intervalCheckSeconds != undefined ?  
