@@ -2,6 +2,7 @@ const settings = require('./settings.json');
 const http = require('http');
 const https = require('https');
 const request = require('request');
+const log = require("./logger");
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = settings.rest.tlsRejectUnauthorized == true ? "1" : "0";
 
 class restHandler {
@@ -56,10 +57,11 @@ class restHandler {
 		};
 
 		const req = this.httpMethod.request(options, function(res) {
+			log.verbose(path + ": " + JSON.stringify(res));
 			if (res.statusCode < 200 || res.statusCode > 299) {
 				requestCallback(
 					{ 
-						message: "Received bad status code", 
+						message: "Received error status code", 
 						error: { statusCode: res.statusCode }
 					}
 				);
