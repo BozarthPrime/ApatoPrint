@@ -57,7 +57,7 @@ class restHandler {
 		};
 
 		const req = this.httpMethod.request(options, function(res) {
-			log.verbose(path + ": " + JSON.stringify(res));
+			log.verbose("path: " + path + ", statusCode: " + res.statusCode);
 			if (res.statusCode < 200 || res.statusCode > 299) {
 				requestCallback(
 					{ 
