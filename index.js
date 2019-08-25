@@ -62,7 +62,15 @@ if ((settings.autoConnect != undefined && settings.autoConnect.enabled == true) 
 	
 			if (err != null && (settings.autoConnect != undefined && settings.autoConnect.enabled == true)) {
 				log.verbose("Printer was not connected. Attempting connection.");
-				connect();
+				printCtrl.connect(function(err, res) {
+					if (err) {
+						log.verbose("Error in auto-connect:" + JSON.stringify(err));
+					} else {
+						bot.postToCommandChannel("The printer was auto-connected");
+					}
+			
+					
+				});
 			} else {
 				// Update global info
 				if (globalInfo .printRunning && data.state.flags.printing == false) {
