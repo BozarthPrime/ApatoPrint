@@ -14,6 +14,7 @@ class restHandler {
 
 	post(path, data, headers, callback) {
 		this.makeReq('POST', this.host, this.port, path, headers, callback, function(req) {
+			log.verbose("postData: " + data);
 			req.write(data);
 			req.end();
 		});
@@ -55,6 +56,8 @@ class restHandler {
 			method: method,
 			headers: headers
 		};
+
+		log.verbose("request: " + JSON.stringify(options));
 
 		const req = this.httpMethod.request(options, function(res) {
 			log.verbose("path: " + path + ", statusCode: " + res.statusCode);

@@ -43,10 +43,15 @@ class octoprintController {
 	};
 
 	pause(callback) {
+		var data = '{"command": "pause", "action": "pause"}';
 		this.rest.post(
 			"/api/job", 
-			'{"command": "pause", "action": "pause"}', 
-			this.headers, 
+			data, 
+			{
+				'Content-Type': 'application/json',
+				'Content-Length': data.length,
+				'X-Api-Key': this.settings.apiKey
+			}, 
 			function(err, data) {
 				if (err == null) {
 					callback(null, true);
@@ -64,10 +69,15 @@ class octoprintController {
 	};
 
 	resume(callback) {
+		var data = '{"command": "pause", "action": "resume"}';
 		this.rest.post(
 			"/api/job", 
-			'{"command": "pause", "action": "resume"}', 
-			this.headers, 
+			data, 
+			{
+				'Content-Type': 'application/json',
+				'Content-Length': data.length,
+				'X-Api-Key': this.settings.apiKey
+			}, 
 			function(err, data) {
 				if (err == null) {
 					callback(null, true);
@@ -85,10 +95,15 @@ class octoprintController {
 	};
 
 	cancel(callback) {
+		var data = '{"command": "cancel"}';
 		this.rest.post(
 			"/api/job", 
-			'{"command": "cancel"}', 
-			this.headers, 
+			data, 
+			{
+				'Content-Type': 'application/json',
+				'Content-Length': data.length,
+				'X-Api-Key': this.settings.apiKey
+			}, 
 			function(err, data) {
 				if (err == null) {
 					callback(null, true);
@@ -109,11 +124,16 @@ class octoprintController {
 		if (location.substring(0, 1) != "/") {
 			location = "/" + location;
 		}
+		var data = '{"command": "select", "print": true}';
 
 		this.rest.post(
 			"/api/files" + location, 
-			'{"command": "select", "print": true}', 
-			this.headers, 
+			data, 
+			{
+				'Content-Type': 'application/json',
+				'Content-Length': data.length,
+				'X-Api-Key': this.settings.apiKey
+			}, 
 			function(err, data) {
 				if (err == null) {
 					callback(null, true);
@@ -178,10 +198,15 @@ class octoprintController {
 	};
 
 	connect(callback) {
+		var data = '{"command": "connect"}';
 		this.rest.post(
 			"/api/connection", 
-			'{"command": "connect"}', 
-			this.headers, 
+			data, 
+			{
+				'Content-Type': 'application/json',
+				'Content-Length': data.length,
+				'X-Api-Key': this.settings.apiKey
+			}, 
 			function(err, data) {
 				if (err == null) {
 					callback(null, true);
@@ -199,10 +224,15 @@ class octoprintController {
 	};
 
 	disconnect(callback) {
+		var data = '{"command": "disconnect"}';
 		this.rest.post(
 			"/api/connection", 
-			'{"command": "disconnect"}', 
-			this.headers, 
+			data, 
+			{
+				'Content-Type': 'application/json',
+				'Content-Length': data.length,
+				'X-Api-Key': this.settings.apiKey
+			}, 
 			function(err, data) {
 				if (err == null) {
 					callback(null, true);
