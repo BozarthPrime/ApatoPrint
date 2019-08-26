@@ -58,15 +58,18 @@ if ((settings.autoConnect != undefined && settings.autoConnect.enabled == true) 
 	setInterval(function() {
 		log.verbose("Checking connection for auto connect.");
 		printCtrl.printerStatus(function(err, data) {
-			var result;
-	
 			if (err != null && (settings.autoConnect != undefined && settings.autoConnect.enabled == true)) {
 				log.verbose("Printer was not connected. Attempting connection.");
 				printCtrl.connect(function(err, res) {
 					if (err || res == false) {
 						log.verbose("Could not auto-connect");
 					} else {
-						bot.postToCommandChannel("The printer was auto-connected");
+						setTimeout(
+							printCtrl.printerStatus(function(err, connectionData) {
+								if (err != null) {
+									bot.postToCommandChannel("The printer was auto-connected");
+								}
+							}), 2000);
 					}
 		
 				});
