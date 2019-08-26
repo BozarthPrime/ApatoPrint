@@ -64,12 +64,12 @@ if ((settings.autoConnect != undefined && settings.autoConnect.enabled == true) 
 					if (err || res == false) {
 						log.verbose("Could not auto-connect");
 					} else {
-						setTimeout(
+						setTimeout(function() {
 							printCtrl.printerStatus(function(err, connectionData) {
 								if (err != null) {
 									bot.postToCommandChannel("The printer was auto-connected");
 								}
-							}), 2000);
+							})}, 2000);
 					}
 		
 				});
